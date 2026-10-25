@@ -6,7 +6,7 @@
 //! SPDX-License-Identifier: MIT
 
 //! Module version (independent from Pike releases). Follow semver.
-constant VERSION = "1.2.0";
+constant VERSION = "1.3.0";
 
 //! One connection. Create with Valkey.Client(), then call commands.
 //! All calls block on the socket (no timeouts); server errors and

@@ -83,6 +83,7 @@ server may stall silently.
 | Sets | `sadd`, `srem`, `smembers`, `scard`, `sismember` |
 | Misc | `call(cmd, args...)`, `pipeline(cmds)`, `type`, `dbsize`, `info`, `lastsave` |
 | Persistence | `bgsave`, `bgrewriteaof`, `wait_bgsave_done`, `ensure_persisted`, `persistence_info`, `config_get`, `config_set`, `shutdown` |
+| JSON mapping | `Json.pmod`: `encode_mapping`/`decode_mapping`, `dumps`/`loads`; integer keys as `#n` |
 
 Reply mapping: `+` → string, `:` → int, `$` → string (nil → `0`),
 `*` → array (nil → `0`). A failed command inside `pipeline()` yields

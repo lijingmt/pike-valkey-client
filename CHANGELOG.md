@@ -7,6 +7,14 @@ Module versions are independent from Pike releases (semver).
 - `examples/cache_aside.pike`: cache-aside with source fallback
   (hit / miss-backfill / Valkey-down passthrough), all paths verified.
 
+## 1.3.0 — 2026-10-25
+
+- New `Json.pmod`: generic Pike mapping <-> JSON conversion with
+  integer-key `#n` convention, nested/unicode/empty-container safe.
+- New `tests/json_stress.pike`: dumps ~149k/s, loads ~90k/s,
+  live pipelined SET ~43k/s and GET ~120k/s docs/sec, all intact.
+- `Valkey.VERSION` and `Json.VERSION` bumped to 1.3.0.
+
 ## 1.2.0 — 2026-10-25
 
 - Persistence helpers: `bgsave`, `bgrewriteaof`, `wait_bgsave_done`,
