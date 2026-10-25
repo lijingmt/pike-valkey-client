@@ -2,7 +2,11 @@
 
 Module versions are independent from Pike releases (semver).
 
-## Unreleased
+## 1.1.0 — 2026-10-25
+
+- 1000-concurrency test (`tests/concurrent.pike`): N threads × M SET+GET
+  pairs over per-thread connections, aggregate + per-thread throughput.
+- `Valkey.VERSION` bumped to 1.1.0.
 
 ## 1.0.0 — 2026-10-25
 

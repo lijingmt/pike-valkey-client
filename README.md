@@ -25,7 +25,7 @@ pike --version
 Copy the module somewhere on your module path, or point at this repo:
 
 ```sh
-git clone https://github.com/<you>/pike-valkey-client.git
+git clone https://github.com/lijingmt/pike-valkey-client.git
 cd pike-valkey-client
 pike -M. examples/basic.pike
 ```
@@ -142,6 +142,7 @@ password raises, correct password (legacy and `user`+`pass` forms) works.
 | Pipelined SETs (100/batch) | 3,000 ops, ~221,500 ops/sec |
 | Close+reconnect churn | 200 cycles, ~2,000 cycles/sec |
 | Writes during BGSAVE | 500 ops, ~5,700 ops/sec, data verified intact |
+| 1000 concurrent clients | 20,000 ops, ~14,760 ops/sec aggregate, 0 mismatches, 0 failed threads |
 
 (Single-shot throughput is Docker Desktop loopback bound; pipelining is
 ~41x. Numbers move with hardware — rerun on yours.)
