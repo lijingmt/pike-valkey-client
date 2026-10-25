@@ -2,6 +2,15 @@
 
 Module versions are independent from Pike releases (semver).
 
+## 1.2.0 — 2026-10-25
+
+- Persistence helpers: `bgsave`, `bgrewriteaof`, `wait_bgsave_done`,
+  `ensure_persisted` (snapshot + verify LASTSAVE moved), `persistence_info`,
+  `config_get`/`config_set`, graceful `shutdown`.
+- New `tests/persist_lib.pike` (6/6 pass) and live `SHUTDOWN NOSAVE` +
+  restart recovery verified.
+- `Valkey.VERSION` bumped to 1.2.0.
+
 ## 1.1.0 — 2026-10-25
 
 - 1000-concurrency test (`tests/concurrent.pike`): N threads × M SET+GET

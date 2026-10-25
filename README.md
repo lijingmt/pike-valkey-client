@@ -82,6 +82,7 @@ server may stall silently.
 | Lists | `lpush`, `rpush`, `lpop`, `rpop`, `llen`, `lrange`, `ltrim` |
 | Sets | `sadd`, `srem`, `smembers`, `scard`, `sismember` |
 | Misc | `call(cmd, args...)`, `pipeline(cmds)`, `type`, `dbsize`, `info`, `lastsave` |
+| Persistence | `bgsave`, `bgrewriteaof`, `wait_bgsave_done`, `ensure_persisted`, `persistence_info`, `config_get`, `config_set`, `shutdown` |
 
 Reply mapping: `+` → string, `:` → int, `$` → string (nil → `0`),
 `*` → array (nil → `0`). A failed command inside `pipeline()` yields
@@ -109,6 +110,11 @@ docker run -d --name valkey-persist -p 6380:6379 \
   `tests/persist.pike <host> <port> verify` reads everything back.
 - A key written *after* the snapshot also survived the SIGKILL restart,
   proving AOF replay (RDB alone could not have had it).
+- For game use: the authoritative archive stays on disk with the game's
+  own atomic save (live file + `.bak` + same-directory rename, never
+  in-place overwrite). Valkey persistence only makes the speed layer
+  survive restarts; if it ever disagrees with disk, disk wins and
+  Valkey is refilled.
 
 Operational notes: keep `appendonly yes`; schedule `BGSAVE` (or rely on
 `save` points); back up `/data` (the volume); run `verify` after any
@@ -143,6 +149,7 @@ password raises, correct password (legacy and `user`+`pass` forms) works.
 | Close+reconnect churn | 200 cycles, ~2,000 cycles/sec |
 | Writes during BGSAVE | 500 ops, ~5,700 ops/sec, data verified intact |
 | 1000 concurrent clients | 20,000 ops, ~14,760 ops/sec aggregate, 0 mismatches, 0 failed threads |
+| Persistence helpers | `tests/persist_lib.pike` 6/6 pass; live `SHUTDOWN NOSAVE` + restart recovered serving |
 
 (Single-shot throughput is Docker Desktop loopback bound; pipelining is
 ~41x. Numbers move with hardware — rerun on yours.)

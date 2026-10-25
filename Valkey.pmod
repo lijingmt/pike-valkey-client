@@ -6,7 +6,7 @@
 //! SPDX-License-Identifier: MIT
 
 //! Module version (independent from Pike releases). Follow semver.
-constant VERSION = "1.1.0";
+constant VERSION = "1.2.0";
 
 //! One connection. Create with Valkey.Client(), then call commands.
 //! All calls block on the socket (no timeouts); server errors and
@@ -479,5 +479,118 @@ class Client
     int lastsave()
     {
         return call("LASTSAVE");
+    }
+
+    // ---- persistence ----
+    // Valkey loads its RDB snapshot and replays AOF automatically on
+    // startup; nothing client-side is needed for the reload itself.
+    // These helpers trigger snapshots on demand and confirm they
+    // landed, so an operator (or a cron job) can persist before
+    // maintenance. They do NOT replace the game's authoritative
+    // archive: player profiles' source of truth stays with the
+    // game's own atomic save; Valkey persistence only makes the
+    // speed layer survive restarts.
+
+    //! CONFIG GET as a mapping. Empty mapping when nothing matches.
+    mapping config_get(string pattern)
+    {
+        array(mixed) raw;
+        mapping out;
+        int i;
+        raw = call("CONFIG", "GET", pattern);
+        out = ([]);
+        if(!raw) return out;
+        for(i = 0; i + 1 < sizeof(raw); i += 2)
+            out[raw[i]] = raw[i+1];
+        return out;
+    }
+
+    string config_set(string key, string val)
+    {
+        return call("CONFIG", "SET", key, val);
+    }
+
+    string bgsave()
+    {
+        return call("BGSAVE");
+    }
+
+    string bgrewriteaof()
+    {
+        return call("BGREWRITEAOF");
+    }
+
+    //! Wait until no BGSAVE is in progress. timeout in seconds,
+    //! default 60. Returns 1 when quiet, 0 on timeout.
+    int wait_bgsave_done(int|void timeout)
+    {
+        int left;
+        left = timeout || 60;
+        while(left-- > 0) {
+            string info = info("persistence");
+            if(search(info, "rdb_bgsave_in_progress:0") >= 0)
+                return 1;
+            sleep(1);
+        }
+        return 0;
+    }
+
+    //! BGSAVE, wait for it, and confirm LASTSAVE moved forward.
+    //! Returns 1 on a verified snapshot, 0 otherwise. A save that is
+    //! already running counts too: we wait for it all the same.
+    int ensure_persisted(int|void timeout)
+    {
+        int before;
+        mixed err;
+        before = lastsave();
+        err = catch { bgsave(); };
+        if(err && search(describe_error(err), "already in progress") < 0)
+            throw(err);
+        if(!wait_bgsave_done(timeout))
+            return 0;
+        return lastsave() > before ? 1 : 0;
+    }
+
+    //! INFO persistence as a mapping (values stay strings).
+    mapping persistence_info()
+    {
+        string info;
+        array(string) lines;
+        mapping out;
+        int i;
+        info = call("INFO", "persistence");
+        out = ([]);
+        lines = info / "\n";
+        for(i = 0; i < sizeof(lines); i++) {
+            string k;
+            string v;
+            string l = lines[i];
+            if(!sizeof(l) || l[0] == '#') continue;
+            if(sscanf(l, "%s:%s", k, v) != 2) continue;
+            if(sizeof(v) && v[-1] == '\r')
+                v = v[..<1];
+            out[k] = v;
+        }
+        return out;
+    }
+
+    //! Graceful SHUTDOWN. mode is "SAVE", "NOSAVE" or 0 (server default).
+    //! The server closes the connection without a reply; a clean
+    //! disconnect is reported as "OK". Document this call in runbooks:
+    //! it stops the server you are connected to.
+    string shutdown(string|void mode)
+    {
+        mixed err;
+        err = catch {
+            if(mode) call("SHUTDOWN", mode);
+            else call("SHUTDOWN");
+        };
+        if(err) {
+            string msg = describe_error(err);
+            if(search(msg, "connection closed") >= 0)
+                return "OK";
+            throw(err);
+        }
+        return "OK";
     }
 }
