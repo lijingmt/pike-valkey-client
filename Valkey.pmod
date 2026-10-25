@@ -6,7 +6,7 @@
 //! SPDX-License-Identifier: MIT
 
 //! Module version (independent from Pike releases). Follow semver.
-constant VERSION = "1.3.0";
+constant VERSION = "1.4.0";
 
 //! One connection. Create with Valkey.Client(), then call commands.
 //! All calls block on the socket (no timeouts); server errors and
@@ -394,6 +394,16 @@ class Client
         return call("HLEN", key);
     }
 
+    int hincrby(string key, string field, int n)
+    {
+        return call("HINCRBY", key, field, (string)n);
+    }
+
+    string hincrbyfloat(string key, string field, float n)
+    {
+        return call("HINCRBYFLOAT", key, field, (string)n);
+    }
+
     // ---- lists ----
 
     int lpush(string key, string ... vals)
@@ -456,6 +466,103 @@ class Client
     int sismember(string key, string member)
     {
         return call("SISMEMBER", key, member);
+    }
+
+    // ---- sorted sets ----
+
+    //! Add members with scores. vals maps member->score (int|float).
+    //! opts may hold "nx", "xx", "gt", "lt", "ch".
+    int zadd(string key, mapping vals, mapping|void opts)
+    {
+        array(string) members;
+        array(string) args;
+        mapping o;
+        int i;
+        o = opts || ([]);
+        members = indices(vals);
+        args = ({ key });
+        if(o->nx) args += ({ "NX" });
+        if(o->xx) args += ({ "XX" });
+        if(o->gt) args += ({ "GT" });
+        if(o->lt) args += ({ "LT" });
+        if(o->ch) args += ({ "CH" });
+        for(i = 0; i < sizeof(members); i++)
+            args += ({ (string)vals[members[i]], members[i] });
+        return call("ZADD", @args);
+    }
+
+    int zrem(string key, string ... members)
+    {
+        return call("ZREM", key, @members);
+    }
+
+    string|zero zscore(string key, string member)
+    {
+        return call("ZSCORE", key, member);
+    }
+
+    int|zero zrank(string key, string member)
+    {
+        return call("ZRANK", key, member);
+    }
+
+    int|zero zrevrank(string key, string member)
+    {
+        return call("ZREVRANK", key, member);
+    }
+
+    string zincrby(string key, mixed n, string member)
+    {
+        return call("ZINCRBY", key, (string)n, member);
+    }
+
+    int zcard(string key)
+    {
+        return call("ZCARD", key);
+    }
+
+    int zcount(string key, string min, string max)
+    {
+        return call("ZCOUNT", key, min, max);
+    }
+
+    //! ZRANGE. withscores appends WITHSCORES and returns a flat
+    //! array [member, score, member, score, ...].
+    array(mixed) zrange(string key, int start, int stop,
+                        int|void withscores)
+    {
+        if(withscores) return call("ZRANGE", key, (string)start,
+                                   (string)stop, "WITHSCORES");
+        return call("ZRANGE", key, (string)start, (string)stop);
+    }
+
+    //! ZREVRANGE. withscores appends WITHSCORES, same flat layout.
+    array(mixed) zrevrange(string key, int start, int stop,
+                           int|void withscores)
+    {
+        if(withscores) return call("ZREVRANGE", key, (string)start,
+                                   (string)stop, "WITHSCORES");
+        return call("ZREVRANGE", key, (string)start, (string)stop);
+    }
+
+    array(mixed) zrangebyscore(string key, string min, string max)
+    {
+        return call("ZRANGEBYSCORE", key, min, max);
+    }
+
+    array(mixed) zrevrangebyscore(string key, string max, string min)
+    {
+        return call("ZREVRANGEBYSCORE", key, max, min);
+    }
+
+    int zremrangebyrank(string key, int start, int stop)
+    {
+        return call("ZREMRANGEBYRANK", key, (string)start, (string)stop);
+    }
+
+    int zremrangebyscore(string key, string min, string max)
+    {
+        return call("ZREMRANGEBYSCORE", key, min, max);
     }
 
     // ---- misc ----

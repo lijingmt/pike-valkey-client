@@ -11,6 +11,20 @@ Module versions are independent from Pike releases (semver).
 - `quickstart.ps1`: same flow for Windows PowerShell 5.1 (written,
   needs a real Windows run to verify).
 
+## 1.4.0 — 2026-10-25
+
+- Sorted sets in `Valkey.pmod`: `zadd` (+NX/XX/GT/LT/CH), `zrem`,
+  `zscore`, `zrank`, `zrevrank`, `zincrby`, `zcard`, `zcount`,
+  `zrange`/`zrevrange` (+WITHSCORES), `zrangebyscore`,
+  `zrevrangebyscore`, `zremrangebyrank`, `zremrangebyscore`;
+  plus `hincrby`/`hincrbyfloat` for counters.
+- New `VMap.pmod`: hash-backed mapping facade
+  (get/set/set_map/all/del/exists/keys/size/incrby/clear).
+- New `tests/zset_stress.pike`: 29 checks green; 10k-member board
+  pipelined at ~158k members/sec, top-100 reads ~3.5k/sec,
+  rank lookups ~6k/sec, HINCRBY ~6.3k ops/sec.
+- `Valkey.VERSION` bumped to 1.4.0.
+
 ## 1.3.0 — 2026-10-25
 
 - New `Json.pmod`: generic Pike mapping <-> JSON conversion with

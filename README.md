@@ -112,6 +112,8 @@ server may stall silently.
 | Misc | `call(cmd, args...)`, `pipeline(cmds)`, `type`, `dbsize`, `info`, `lastsave` |
 | Persistence | `bgsave`, `bgrewriteaof`, `wait_bgsave_done`, `ensure_persisted`, `persistence_info`, `config_get`, `config_set`, `shutdown` |
 | JSON mapping | `Json.pmod`: `encode_mapping`/`decode_mapping`, `dumps`/`loads`; integer keys as `#n` |
+| Sorted sets | `zadd` (+NX/XX/GT/LT/CH), `zscore`, `zrank`, `zrevrank`, `zincrby`, `zcard`, `zcount`, `zrange`, `zrevrange`, `zrangebyscore`, `zrevrangebyscore`, trims |
+| Shared maps | `VMap.pmod`: hash-backed mapping facade for small shared tables |
 
 Reply mapping: `+` → string, `:` → int, `$` → string (nil → `0`),
 `*` → array (nil → `0`). A failed command inside `pipeline()` yields
