@@ -2,6 +2,11 @@
 
 Module versions are independent from Pike releases (semver).
 
+## Unreleased
+
+- `examples/cache_aside.pike`: cache-aside with source fallback
+  (hit / miss-backfill / Valkey-down passthrough), all paths verified.
+
 ## 1.2.0 — 2026-10-25
 
 - Persistence helpers: `bgsave`, `bgrewriteaof`, `wait_bgsave_done`,

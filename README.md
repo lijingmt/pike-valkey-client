@@ -172,6 +172,20 @@ Valkey.VERSION;  // "1.0.0"
 Bump it per [semver](https://semver.org/), note tested Pike versions in
 [CHANGELOG.md](CHANGELOG.md), and tag releases (`v1.0.0`, …).
 
+## Caching with fallback (recommended pattern)
+
+Valkey is a speed layer, never the owner of data. `examples/cache_aside.pike`
+shows the pattern all three paths verified live:
+
+1. **Hit** → return from Valkey.
+2. **Miss** → load from the source of truth (disk archive, DB),
+   `SETEX` it back into Valkey, return.
+3. **Valkey down** → load from source directly and return; no exception
+   escapes, the game keeps serving with zero cache.
+
+The game archive on disk stays authoritative; if Valkey ever disagrees
+with it, disk wins and Valkey is refilled.
+
 ## Project philosophy
 
 See [PHILOSOPHY.md](PHILOSOPHY.md): the infinite-loop engineer,
