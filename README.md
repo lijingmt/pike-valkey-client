@@ -217,6 +217,14 @@ shows the pattern all three paths verified live:
 The game archive on disk stays authoritative; if Valkey ever disagrees
 with it, disk wins and Valkey is refilled.
 
+## For AI coding agents
+
+This repo ships a validated skill package:
+[.agents/skills/pike-valkey-client/SKILL.md](.agents/skills/pike-valkey-client/SKILL.md)
+(`muse skills validate`: valid, zero diagnostics). Point your agent at
+it and it will know what the library does, how to use it, and how to
+run the verified suite.
+
 ## Project philosophy
 
 See [PHILOSOPHY.md](PHILOSOPHY.md): the infinite-loop engineer,
