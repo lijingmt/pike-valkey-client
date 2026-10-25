@@ -8,6 +8,8 @@ Module versions are independent from Pike releases (semver).
   (hit / miss-backfill / Valkey-down passthrough), all paths verified.
 - `quickstart.sh`: one-command foolproof setup (Pike check, local
   Valkey reuse-or-start, demo run); both branches verified.
+- `quickstart.ps1`: same flow for Windows PowerShell 5.1 (written,
+  needs a real Windows run to verify).
 
 ## 1.3.0 — 2026-10-25
 

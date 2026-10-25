@@ -25,7 +25,13 @@ pike --version
 ```sh
 git clone https://github.com/lijingmt/pike-valkey-client.git
 cd pike-valkey-client
-./quickstart.sh
+./quickstart.sh            # macOS / Linux
+```
+
+Windows (PowerShell):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File quickstart.ps1
 ```
 
 That one script checks Pike 9, reuses (or Docker-starts) a local Valkey
