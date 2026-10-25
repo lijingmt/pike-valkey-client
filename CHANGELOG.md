@@ -6,6 +6,8 @@ Module versions are independent from Pike releases (semver).
 
 - `examples/cache_aside.pike`: cache-aside with source fallback
   (hit / miss-backfill / Valkey-down passthrough), all paths verified.
+- `quickstart.sh`: one-command foolproof setup (Pike check, local
+  Valkey reuse-or-start, demo run); both branches verified.
 
 ## 1.3.0 — 2026-10-25
 

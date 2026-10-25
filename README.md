@@ -20,6 +20,28 @@ Check yours:
 pike --version
 ```
 
+## 60-second quickstart (foolproof)
+
+```sh
+git clone https://github.com/lijingmt/pike-valkey-client.git
+cd pike-valkey-client
+./quickstart.sh
+```
+
+That one script checks Pike 9, reuses (or Docker-starts) a local Valkey
+on `127.0.0.1:6379`, runs the demo, and prints what to try next.
+Success looks like `ok: demo passed`.
+
+Troubleshooting:
+
+- `pike not found` → install Pike 9: https://pike.lysator.liu.se/download/
+- `need Pike 9, found: ...` → the module only supports Pike 9.
+- `nothing on 127.0.0.1:6379 and no docker` → start any Valkey/Redis
+  on port 6379 yourself, then rerun. No data is touched except demo
+  keys on a throwaway server.
+- `demo did not complete` → the server accepted TCP but did not speak
+  RESP; point the script at a real Valkey/Redis.
+
 ## Install
 
 Copy the module somewhere on your module path, or point at this repo:
